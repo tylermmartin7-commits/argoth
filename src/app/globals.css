@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Space Mono', monospace;
+  --font-display: 'Syne', sans-serif;
+  
+  --color-bg: #0a0a0a;
+  --color-bg-elevated: #141414;
+  --color-bg-card: #1a1a1a;
+  --color-border: #2a2a2a;
+  --color-text: #e5e5e5;
+  --color-text-muted: #a3a3a3;
+  --color-accent: #ff3b5c;
+  --color-accent-hover: #ff5270;
+  --color-agree: #22c55e;
+  --color-disagree: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 59, 92, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-accent);
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 59, 92, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 59, 92, 0.5);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply px-6 py-2.5 bg-[var(--color-accent)] text-white font-bold rounded-lg
+         hover:bg-[var(--color-accent-hover)] transition-all duration-200
+         active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply px-6 py-2.5 bg-[var(--color-bg-elevated)] text-[var(--color-text)] font-bold rounded-lg
+         border border-[var(--color-border)] hover:border-[var(--color-accent)]
+         transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-ghost {
+  @apply px-4 py-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]
+         hover:bg-[var(--color-bg-elevated)] rounded-lg transition-all duration-200;
+}
+
+/* Card styles */
+.card {
+  @apply bg-[var(--color-bg-card)] border border-[var(--color-border)]
+         rounded-xl p-6 transition-all duration-200;
+}
+
+.card:hover {
+  border-color: #3a3a3a;
+}
+
+/* Input styles */
+.input {
+  @apply w-full px-4 py-3 bg-[var(--color-bg-elevated)] border border-[var(--color-border)]
+         rounded-lg text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]
+         focus:outline-none focus:border-[var(--color-accent)] transition-colors duration-200;
+}
+
+.textarea {
+  @apply w-full px-4 py-3 bg-[var(--color-bg-elevated)] border border-[var(--color-border)]
+         rounded-lg text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]
+         focus:outline-none focus:border-[var(--color-accent)] transition-colors duration-200
+         min-h-[120px] resize-y;
+}
+
+/* Badge styles */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold;
+}
+
+.badge-agree {
+  @apply bg-green-500/10 text-green-400 border border-green-500/20;
+}
+
+.badge-disagree {
+  @apply bg-red-500/10 text-red-400 border border-red-500/20;
+}
+
+.badge-neutral {
+  @apply bg-blue-500/10 text-blue-400 border border-blue-500/20;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  @apply inline-block w-5 h-5 border-2 border-[var(--color-border)] border-t-[var(--color-accent)]
+         rounded-full animate-spin;
+}
+
+/* Debate stats grid */
+.stats-grid {
+  @apply grid grid-cols-3 gap-4 text-center;
+}
+
+.stat-item {
+  @apply flex flex-col gap-1;
+}
+
+.stat-value {
+  @apply text-2xl font-bold font-display;
+}
+
+.stat-label {
+  @apply text-xs text-[var(--color-text-muted)] uppercase tracking-wider;
+}
