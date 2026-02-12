@@ -74,7 +74,7 @@ export default async function AdminReportsPage() {
 
   // Check if user is admin
   const { data: profile } = await supabase
-    .from('profiles')
+    .from<'profiles'>('profiles')
     .select('is_admin')
     .eq('id', user.id)
     .single()
