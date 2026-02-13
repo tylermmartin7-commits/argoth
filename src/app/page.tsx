@@ -45,9 +45,15 @@ export default async function HomePage({
   }
 
   // Get user votes if logged in
+
   let userVotes: Record<string, number> = {}
-  if (user && debates) {
-    const debateIds = debates.map((d) => d.id)
+  // Ensure debates is an array and filter out error objects
+  const validDebates: DebateWithDetails[] = Array.isArray(debates)
+    ? (debates as DebateWithDetails[]).filter((d): d is DebateWithDetails => typeof d === 'object' && d !== null && 'id' in d)
+    : [];
+
+  if (user && validDebates.length > 0) {
+    const debateIds = validDebates.map((d) => d.id)
     const { data: votes } = await supabase
       .from('votes')
       .select('target_id, value')
@@ -55,8 +61,10 @@ export default async function HomePage({
       .eq('target_type', 'debate')
       .in('target_id', debateIds)
 
-    if (votes) {
-      userVotes = votes.reduce(
+    type Vote = { target_id: string; value: number }
+    const typedVotes = votes as Vote[] | null
+    if (typedVotes) {
+      userVotes = typedVotes.reduce(
         (acc, vote) => ({
           ...acc,
           [vote.target_id]: vote.value,
@@ -67,10 +75,10 @@ export default async function HomePage({
   }
 
   const debatesWithVotes: DebateWithDetails[] =
-    debates?.map((debate) => ({
+    validDebates.map((debate) => ({
       ...debate,
       user_vote: userVotes[debate.id] || null,
-    })) || []
+    }))
 
   return (
     <div className="container mx-auto px-4 max-w-4xl">

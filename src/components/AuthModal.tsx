@@ -32,12 +32,17 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
         if (signUpError) throw signUpError
 
         if (authData.user) {
+
           // Create profile
-          const { error: profileError } = await supabase.from('profiles').insert({
-            id: authData.user.id,
-            username: username.toLowerCase().trim(),
-            display_name: username.trim(),
-          })
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: authData.user.id,
+                username: username.toLowerCase().trim(),
+                display_name: username.trim(),
+              }
+            ] as any)
 
           if (profileError) throw profileError
 

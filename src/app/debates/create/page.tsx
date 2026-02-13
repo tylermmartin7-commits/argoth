@@ -16,7 +16,7 @@ export default async function CreateDebatePage() {
   const { data: topics } = await supabase
     .from('topics')
     .select('*')
-    .order('name')
+    .order('name') as { data: { id: string | number; name: string }[] | null }
 
   return (
     <div className="container mx-auto px-4 max-w-3xl">
@@ -29,7 +29,7 @@ export default async function CreateDebatePage() {
         </p>
       </div>
 
-      <form action={createDebate} className="card space-y-6">
+      <form action={async (formData) => { await createDebate(formData); }} className="card space-y-6">
         <div>
           <label htmlFor="title" className="block text-sm font-bold mb-2">
             Title
@@ -115,7 +115,7 @@ export default async function CreateDebatePage() {
           </label>
           <select id="topic_id" name="topic_id" className="input">
             <option value="">Select a topic...</option>
-            {topics?.map((topic) => (
+            {topics?.map((topic: { id: string | number; name: string }) => (
               <option key={topic.id} value={topic.id}>
                 {topic.name}
               </option>

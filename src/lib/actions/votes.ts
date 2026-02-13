@@ -19,12 +19,16 @@ export async function toggleVote(
   }
 
   // Use the atomic toggle_vote function
-  const { data, error } = await supabase.rpc('toggle_vote', {
+
+  type ToggleVoteResult = { action: string; new_value: number }
+
+
+  const { data, error } = await supabase.rpc<ToggleVoteResult | null>('toggle_vote', {
     p_user_id: user.id,
     p_target_type: targetType,
     p_target_id: targetId,
     p_new_value: value,
-  })
+  } as any)
 
   if (error) {
     return { error: error.message }
@@ -40,16 +44,19 @@ export async function toggleVote(
       .from('comments')
       .select('debate_id')
       .eq('id', targetId)
-      .single()
+      .single<{ debate_id: string }>()
 
     if (comment) {
       revalidatePath(`/debates/${comment.debate_id}`)
     }
   }
 
+  const result = Array.isArray(data)
+    ? (data[0] as unknown as ToggleVoteResult | null)
+    : (data as unknown as ToggleVoteResult | null);
   return {
     success: true,
-    action: data?.[0]?.action,
-    newValue: data?.[0]?.new_value,
+    action: result?.action,
+    newValue: result?.new_value,
   }
 }

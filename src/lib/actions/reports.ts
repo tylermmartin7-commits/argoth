@@ -46,7 +46,7 @@ export async function createReport(
 
 export async function updateReportStatus(
   reportId: string,
-  status: 'open' | 'reviewed' | 'dismissed'
+  status: string
 ) {
   const supabase = await createClient()
 
@@ -74,9 +74,9 @@ export async function updateReportStatus(
 
   const { error } = await supabase
     .from('reports')
-    .update({ status })
+    .update({ status: status } as any)
     .eq('id', reportId)
-
+  
   if (error) {
     return { error: error.message }
   }

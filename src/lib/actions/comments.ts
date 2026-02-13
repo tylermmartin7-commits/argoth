@@ -65,7 +65,7 @@ export async function updateComment(
     .update({
       body: body.trim(),
       side: side,
-    })
+    } as any)
     .eq('id', commentId)
     .eq('author_id', user.id)
 

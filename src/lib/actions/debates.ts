@@ -76,15 +76,15 @@ export async function updateDebate(debateId: string, formData: FormData) {
   const sideBLabel = formData.get('side_b_label') as string
 
 
-  type DebateUpdate = {
+
+  const updateObj: {
     title?: string;
     claim?: string;
     description?: string | null;
     topic_id?: string | null;
     side_a_label?: string;
     side_b_label?: string;
-  };
-  const updateObj: DebateUpdate = {};
+  } = {};
   if (title) updateObj.title = title;
   if (claim) updateObj.claim = claim;
   if (description !== undefined) updateObj.description = description;
@@ -131,9 +131,11 @@ export async function hideDebate(debateId: string, hidden: boolean) {
     return { error: 'You must be an admin to perform this action' }
   }
 
+  type DebateHideUpdate = { is_hidden: boolean };
+  const updateObj: DebateHideUpdate = { is_hidden: hidden };
   const { error } = await supabase
     .from('debates')
-    .update({ is_hidden: hidden } as any)
+    .update(updateObj)
     .eq('id', debateId)
 
   if (error) {

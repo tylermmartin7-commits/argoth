@@ -32,11 +32,12 @@ export default function ProtectedRoute({
       setUser(user)
 
       if (requireAdmin) {
+
         const { data: profile } = await supabase
           .from('profiles')
           .select('is_admin')
           .eq('id', user.id)
-          .single()
+          .single<{ is_admin: boolean }>()
 
         if (!profile?.is_admin) {
           router.push('/')

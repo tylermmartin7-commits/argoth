@@ -24,7 +24,7 @@ export default function NavBar() {
           .from('profiles')
           .select('is_admin')
           .eq('id', user.id)
-          .single()
+          .single<{ is_admin: boolean }>()
           .then(({ data }) => {
             setIsAdmin(data?.is_admin || false)
           })
@@ -42,7 +42,7 @@ export default function NavBar() {
           .from('profiles')
           .select('is_admin')
           .eq('id', session.user.id)
-          .single()
+          .single<{ is_admin: boolean }>()
           .then(({ data }) => {
             setIsAdmin(data?.is_admin || false)
           })
