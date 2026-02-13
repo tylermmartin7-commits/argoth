@@ -163,7 +163,7 @@ h1, h2, h3, h4, h5, h6 {
   @apply w-full px-4 py-3 bg-[var(--color-bg-elevated)] border border-[var(--color-border)]
          rounded-lg text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]
          focus:outline-none focus:border-[var(--color-accent)] transition-colors duration-200
-         min-h-[120px] resize-vertical;
+         min-h-[120px] resize-y;
 }
 
 /* Badge styles */

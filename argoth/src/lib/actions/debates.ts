@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '../supabase/server'
 
 export async function createDebate(formData: FormData) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },
@@ -49,7 +49,7 @@ export async function createDebate(formData: FormData) {
 }
 
 export async function updateDebate(debateId: string, formData: FormData) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },
@@ -88,7 +88,7 @@ export async function updateDebate(debateId: string, formData: FormData) {
 }
 
 export async function hideDebate(debateId: string, hidden: boolean) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },

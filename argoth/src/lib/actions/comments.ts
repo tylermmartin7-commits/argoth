@@ -8,7 +8,7 @@ export async function createComment(
   body: string,
   side: 'A' | 'B' | 'N'
 ) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },
@@ -22,14 +22,17 @@ export async function createComment(
     return { error: 'Comment cannot be empty' }
   }
 
+  // Explicitly type the insert object as any to fix the type error
   const { data, error } = await supabase
     .from('comments')
-    .insert({
-      debate_id: debateId,
-      author_id: user.id,
-      body: body.trim(),
-      side,
-    })
+    .insert([
+      {
+        debate_id: debateId,
+        author_id: user.id,
+        body: body.trim(),
+        side,
+      } as any,
+    ])
     .select()
     .single()
 
@@ -46,7 +49,7 @@ export async function updateComment(
   body: string,
   side: 'A' | 'B' | 'N'
 ) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },
@@ -60,12 +63,13 @@ export async function updateComment(
     return { error: 'Comment cannot be empty' }
   }
 
+  // Explicitly type the update object as any to fix the type error
   const { error } = await supabase
     .from('comments')
     .update({
       body: body.trim(),
       side,
-    })
+    } as any)
     .eq('id', commentId)
     .eq('author_id', user.id)
 
@@ -88,7 +92,7 @@ export async function updateComment(
 }
 
 export async function deleteComment(commentId: string) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },
@@ -123,7 +127,7 @@ export async function deleteComment(commentId: string) {
 }
 
 export async function hideComment(commentId: string, hidden: boolean) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },

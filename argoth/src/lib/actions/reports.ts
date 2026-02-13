@@ -8,7 +8,7 @@ export async function createReport(
   targetId: string,
   reason: string
 ) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },
@@ -44,7 +44,7 @@ export async function updateReportStatus(
   reportId: string,
   status: 'open' | 'reviewed' | 'dismissed'
 ) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },

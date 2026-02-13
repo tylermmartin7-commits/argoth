@@ -23,16 +23,14 @@ export async function toggleVote(
   type ToggleVoteResult = { action: string; new_value: number }
 
 
-  const { data, error } = await supabase.rpc<ToggleVoteResult | null>('toggle_vote', {
+  const { data, error } = await (supabase as any).rpc('toggle_vote', {
     p_user_id: user.id,
     p_target_type: targetType,
     p_target_id: targetId,
     p_new_value: value,
   } as any)
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return { error: error.message }
 
   // Revalidate appropriate paths
   if (targetType === 'debate') {

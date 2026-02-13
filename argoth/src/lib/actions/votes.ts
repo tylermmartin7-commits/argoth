@@ -8,7 +8,7 @@ export async function toggleVote(
   targetId: string,
   value: 1 | -1
 ) {
-  const supabase = await createClient()
+  const supabase: any = await createClient()
 
   const {
     data: { user },

@@ -24,8 +24,7 @@ export async function createReport(
 
 
 
-  const { data, error } = await supabase
-    .from('reports')
+  const { data, error } = await (supabase as any).from('reports')
     .insert([
       {
         reporter_id: user.id,
@@ -72,9 +71,8 @@ export async function updateReportStatus(
     return { error: 'You must be an admin to update report status' }
   }
 
-  const { error } = await supabase
-    .from('reports')
-    .update({ status: status } as any)
+  const { error } = await (supabase as any).from('reports')
+    .update({ status })
     .eq('id', reportId)
   
   if (error) {

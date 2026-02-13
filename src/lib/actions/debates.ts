@@ -77,14 +77,7 @@ export async function updateDebate(debateId: string, formData: FormData) {
 
 
 
-  const updateObj: {
-    title?: string;
-    claim?: string;
-    description?: string | null;
-    topic_id?: string | null;
-    side_a_label?: string;
-    side_b_label?: string;
-  } = {};
+  const updateObj: Record<string, any> = {};
   if (title) updateObj.title = title;
   if (claim) updateObj.claim = claim;
   if (description !== undefined) updateObj.description = description;
@@ -92,8 +85,7 @@ export async function updateDebate(debateId: string, formData: FormData) {
   if (sideALabel) updateObj.side_a_label = sideALabel;
   if (sideBLabel) updateObj.side_b_label = sideBLabel;
 
-  const { error } = await supabase
-    .from('debates')
+  const { error } = await (supabase as any).from('debates')
     .update(updateObj)
     .eq('id', debateId)
     .eq('author_id', user.id)
@@ -133,8 +125,7 @@ export async function hideDebate(debateId: string, hidden: boolean) {
 
   type DebateHideUpdate = { is_hidden: boolean };
   const updateObj: DebateHideUpdate = { is_hidden: hidden };
-  const { error } = await supabase
-    .from('debates')
+  const { error } = await (supabase as any).from('debates')
     .update(updateObj)
     .eq('id', debateId)
 
