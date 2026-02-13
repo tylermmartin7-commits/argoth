@@ -48,7 +48,7 @@ export default async function HomePage({
   // Get user votes if logged in
   let userVotes: Record<string, number> = {}
   if (user && debates) {
-    const debateIds = (debates as DebateWithDetails[]).map((d) => d.id)
+    const debateIds = (debates as DebateWithDetails[])?.map((d) => d.id) || []
     const { data: votes } = await supabase
       .from('votes')
       .select('target_id, value')
