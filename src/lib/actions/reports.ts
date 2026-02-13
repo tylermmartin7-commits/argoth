@@ -74,7 +74,7 @@ export async function updateReportStatus(
 
   const { error } = await supabase
     .from('reports')
-    .update({ status } as any)
+    .update({ status })
     .eq('id', reportId)
 
   if (error) {
