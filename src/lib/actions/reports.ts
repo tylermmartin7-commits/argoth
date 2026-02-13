@@ -7,7 +7,7 @@ export async function createReport(
   targetType: 'debate' | 'comment',
   targetId: string,
   reason: string
-) {
+): Promise<{ error?: string; success?: true; data?: any }> {
   const supabase = await createClient()
 
   const {
@@ -22,14 +22,18 @@ export async function createReport(
     return { error: 'Please provide a reason for the report' }
   }
 
+
+
   const { data, error } = await supabase
     .from('reports')
-    .insert({
-      reporter_id: user.id,
-      target_type: targetType,
-      target_id: targetId,
-      reason: reason.trim(),
-    })
+    .insert([
+      {
+        reporter_id: user.id,
+        target_type: targetType,
+        target_id: targetId,
+        reason: reason.trim(),
+      },
+    ] as any)
     .select()
     .single()
 
@@ -61,13 +65,16 @@ export async function updateReportStatus(
     .eq('id', user.id)
     .single()
 
-  if (!profile?.is_admin) {
-    return { error: 'You must be an admin to perform this action' }
+  const isAdmin =
+    (profile as { is_admin: boolean } | null)?.is_admin === true
+
+  if (!isAdmin) {
+    return { error: 'You must be an admin to update report status' }
   }
 
   const { error } = await supabase
     .from('reports')
-    .update({ status })
+    .update({ status } as any)
     .eq('id', reportId)
 
   if (error) {

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { updateReportStatus } from '@/lib/actions/reports'
-import { hideDebate } from '@/lib/actions/debates'
+// import { hideDebate } from '@/lib/actions/debates'
 import { hideComment } from '@/lib/actions/comments'
 
 export const dynamic = 'force-dynamic'
@@ -74,10 +74,10 @@ export default async function AdminReportsPage() {
 
   // Check if user is admin
   const { data: profile } = await supabase
-    .from<'profiles'>('profiles')
+    .from('profiles')
     .select('is_admin')
     .eq('id', user.id)
-    .single()
+    .single() as any
 
   if (!profile?.is_admin) {
     redirect('/')
@@ -92,32 +92,36 @@ export default async function AdminReportsPage() {
       reporter:reporter_id (username, display_name)
     `
     )
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false }) as any
 
   // Fetch reported content details
-  const debateIds = reports
-    ?.filter((r) => r.target_type === 'debate')
-    .map((r) => r.target_id) || []
-  const commentIds = reports
-    ?.filter((r) => r.target_type === 'comment')
-    .map((r) => r.target_id) || []
+  const debateIds = reports && reports.length > 0
+    ? reports
+        .filter((r: any) => r.target_type === 'debate')
+        .map((r: any) => r.target_id)
+    : []
+  const commentIds = reports && reports.length > 0
+    ? reports
+        .filter((r: any) => r.target_type === 'comment')
+        .map((r: any) => r.target_id)
+    : []
 
   const { data: debates } = debateIds.length > 0
     ? await supabase
         .from('debates')
         .select('id, title, claim, is_hidden')
         .in('id', debateIds)
-    : { data: [] }
+    : { data: null }
 
   const { data: comments } = commentIds.length > 0
     ? await supabase
         .from('comments')
         .select('id, body, is_hidden, debate_id')
         .in('id', commentIds)
-    : { data: [] }
+    : { data: null }
 
-  const debateMap = new Map(debates?.map((d) => [d.id, d]) || [])
-  const commentMap = new Map(comments?.map((c) => [c.id, c]) || [])
+  const debateMap = new Map(debates?.map((d: any) => [d.id, d]) || [])
+  const commentMap = new Map(comments?.map((c: any) => [c.id, c]) || [])
 
   return (
     <div className="container mx-auto px-4 max-w-6xl">
@@ -136,7 +140,7 @@ export default async function AdminReportsPage() {
             </p>
           </div>
         ) : (
-          reports.map((report) => {
+          reports.map((report: any) => {
             const reporter = report.reporter as any
             const content =
               report.target_type === 'debate'

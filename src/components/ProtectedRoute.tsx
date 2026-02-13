@@ -38,7 +38,10 @@ export default function ProtectedRoute({
           .eq('id', user.id)
           .single()
 
-        if (!profile?.is_admin) {
+        const isAdmin =
+          (profile as { is_admin: boolean } | null)?.is_admin === true
+
+        if (!isAdmin) {
           router.push('/')
           return
         }

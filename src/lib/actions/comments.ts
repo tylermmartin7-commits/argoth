@@ -24,12 +24,12 @@ export async function createComment(
 
   const { data, error } = await supabase
     .from('comments')
-    .insert({
+    .insert([{
       debate_id: debateId,
       author_id: user.id,
       body: body.trim(),
       side,
-    })
+    }] as any)
     .select()
     .single()
 
@@ -64,7 +64,7 @@ export async function updateComment(
     .from('comments')
     .update({
       body: body.trim(),
-      side,
+      side: side,
     })
     .eq('id', commentId)
     .eq('author_id', user.id)
@@ -74,13 +74,14 @@ export async function updateComment(
   }
 
   // Get debate_id for revalidation
+
   const { data: comment } = await supabase
     .from('comments')
     .select('debate_id')
     .eq('id', commentId)
-    .single()
+    .single() as { data: { debate_id: string } | null };
 
-  if (comment) {
+  if (comment && comment.debate_id) {
     revalidatePath(`/debates/${comment.debate_id}`)
   }
 
@@ -103,7 +104,7 @@ export async function deleteComment(commentId: string) {
     .from('comments')
     .select('debate_id')
     .eq('id', commentId)
-    .single()
+    .single() as { data: { debate_id: string } | null };
 
   const { error } = await supabase
     .from('comments')
@@ -115,7 +116,7 @@ export async function deleteComment(commentId: string) {
     return { error: error.message }
   }
 
-  if (comment) {
+  if (comment && comment.debate_id) {
     revalidatePath(`/debates/${comment.debate_id}`)
   }
 
@@ -140,7 +141,10 @@ export async function hideComment(commentId: string, hidden: boolean) {
     .eq('id', user.id)
     .single()
 
-  if (!profile?.is_admin) {
+  const isAdmin =
+    (profile as { is_admin: boolean } | null)?.is_admin === true
+
+  if (!isAdmin) {
     return { error: 'You must be an admin to perform this action' }
   }
 
@@ -149,7 +153,7 @@ export async function hideComment(commentId: string, hidden: boolean) {
     .from('comments')
     .select('debate_id')
     .eq('id', commentId)
-    .single()
+    .single() as { data: { debate_id: string } | null };
 
   const { error } = await supabase
     .from('comments')
@@ -160,7 +164,7 @@ export async function hideComment(commentId: string, hidden: boolean) {
     return { error: error.message }
   }
 
-  if (comment) {
+  if (comment && comment.debate_id) {
     revalidatePath(`/debates/${comment.debate_id}`)
   }
   revalidatePath('/admin/reports')
