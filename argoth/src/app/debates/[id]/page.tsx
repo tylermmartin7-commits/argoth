@@ -76,6 +76,7 @@ export default async function DebatePage({
 }: {
   params: Promise<{ id: string }>
 }) {
+
   const { id } = await params
   const supabase = await createClient()
 
@@ -85,15 +86,17 @@ export default async function DebatePage({
   } = await supabase.auth.getUser()
 
   // Fetch debate with details
-  const { data: debate, error: debateError } = await supabase
+  const { data, error: debateError } = await supabase
     .from('debates_feed_new')
     .select('*')
     .eq('id', id)
     .single()
 
-  if (debateError || !debate) {
+  if (debateError || !data) {
     notFound()
   }
+
+  const debate = data as DebateWithDetails
 
   // Get user vote on debate
   let userDebateVote = null
@@ -104,9 +107,9 @@ export default async function DebatePage({
       .eq('user_id', user.id)
       .eq('target_type', 'debate')
       .eq('target_id', id)
-      .single()
+      .single<{ value: number | null }>()
 
-    userDebateVote = vote?.value || null
+    userDebateVote = vote?.value ?? null
   }
 
   const debateWithVote: DebateWithDetails = {
@@ -125,26 +128,27 @@ export default async function DebatePage({
     )
     .eq('debate_id', id)
     .eq('is_hidden', false)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false }) as { data: any[] }
 
   // Get comment scores and user votes
   const commentIds = comments?.map((c) => c.id) || []
   const { data: commentScores } = await supabase
     .from('comment_scores')
     .select('*')
-    .in('comment_id', commentIds)
+    .in('comment_id', commentIds) as { data: { comment_id: string; score?: number; upvote_count?: number; downvote_count?: number }[] }
 
   let userCommentVotes: Record<string, number> = {}
   if (user && commentIds.length > 0) {
+
     const { data: votes } = await supabase
       .from('votes')
       .select('target_id, value')
       .eq('user_id', user.id)
       .eq('target_type', 'comment')
-      .in('target_id', commentIds)
+      .in('target_id', commentIds);
 
     if (votes) {
-      userCommentVotes = votes.reduce(
+      userCommentVotes = (votes as { target_id: string; value: number }[]).reduce(
         (acc, vote) => ({
           ...acc,
           [vote.target_id]: vote.value,
@@ -155,9 +159,9 @@ export default async function DebatePage({
   }
 
   const commentsWithDetails: CommentWithDetails[] =
-    comments?.map((comment) => {
-      const profile = comment.profiles as any
-      const score = commentScores?.find((s) => s.comment_id === comment.id)
+    comments?.map((comment: any) => {
+      const profile = comment.profiles
+      const score = (commentScores as { comment_id: string; score?: number; upvote_count?: number; downvote_count?: number }[] | undefined)?.find((s) => s.comment_id === comment.id)
 
       return {
         ...comment,
