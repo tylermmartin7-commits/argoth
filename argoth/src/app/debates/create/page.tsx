@@ -2,6 +2,13 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createDebate } from '@/lib/actions/debates'
 
+
+type Topic = {
+  id: string | number;
+  name: string;
+  [key: string]: any;
+};
+
 export default async function CreateDebatePage() {
   const supabase = await createClient()
 
@@ -13,10 +20,12 @@ export default async function CreateDebatePage() {
     redirect('/')
   }
 
-  const { data: topics } = await supabase
-    .from('topics')
-    .select('*')
-    .order('name')
+  const { data: topics } = (
+    await supabase
+      .from('topics')
+      .select('*')
+      .order('name')
+  ) as { data: Topic[] | null };
 
   return (
     <div className="container mx-auto px-4 max-w-3xl">
@@ -29,7 +38,12 @@ export default async function CreateDebatePage() {
         </p>
       </div>
 
-      <form action={createDebate} className="card space-y-6">
+      <form
+        action={async (formData) => {
+          await createDebate(formData);
+        }}
+        className="card space-y-6"
+      >
         <div>
           <label htmlFor="title" className="block text-sm font-bold mb-2">
             Title
