@@ -73,11 +73,12 @@ export default async function AdminReportsPage() {
   }
 
   // Check if user is admin
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('is_admin')
     .eq('id', user.id)
-    .single()
+    .single<{ is_admin: boolean }>()
 
   if (!profile?.is_admin) {
     redirect('/')
@@ -92,7 +93,15 @@ export default async function AdminReportsPage() {
       reporter:reporter_id (username, display_name)
     `
     )
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false }) as { data: Array<{
+      id: string;
+      target_type: 'debate' | 'comment';
+      target_id: string;
+      status: string;
+      reporter: { username?: string; display_name?: string };
+      created_at: string;
+      reason: string;
+    }> };
 
   // Fetch reported content details
   const debateIds = reports
@@ -103,18 +112,18 @@ export default async function AdminReportsPage() {
     .map((r) => r.target_id) || []
 
   const { data: debates } = debateIds.length > 0
-    ? await supabase
+    ? (await supabase
         .from('debates')
         .select('id, title, claim, is_hidden')
-        .in('id', debateIds)
-    : { data: [] }
+        .in('id', debateIds)) as { data: Array<{ id: string; title: string; claim: string; is_hidden: boolean }> }
+    : { data: [] as Array<{ id: string; title: string; claim: string; is_hidden: boolean }> }
 
   const { data: comments } = commentIds.length > 0
-    ? await supabase
+    ? (await supabase
         .from('comments')
         .select('id, body, is_hidden, debate_id')
-        .in('id', commentIds)
-    : { data: [] }
+        .in('id', commentIds)) as { data: Array<{ id: string; body: string; is_hidden: boolean; debate_id: string }> }
+    : { data: [] as Array<{ id: string; body: string; is_hidden: boolean; debate_id: string }> }
 
   const debateMap = new Map(debates?.map((d) => [d.id, d]) || [])
   const commentMap = new Map(comments?.map((c) => [c.id, c]) || [])
