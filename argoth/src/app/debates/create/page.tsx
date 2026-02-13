@@ -27,6 +27,11 @@ export default async function CreateDebatePage() {
       .order('name')
   ) as { data: Topic[] | null };
 
+  // Wrap createDebate to return void
+  const handleCreateDebate = async (formData: FormData) => {
+    await createDebate(formData);
+  };
+
   return (
     <div className="container mx-auto px-4 max-w-3xl">
       <div className="mb-8">
@@ -38,12 +43,7 @@ export default async function CreateDebatePage() {
         </p>
       </div>
 
-      <form
-        action={async (formData) => {
-          await createDebate(formData);
-        }}
-        className="card space-y-6"
-      >
+      <form action={handleCreateDebate} className="card space-y-6">
         <div>
           <label htmlFor="title" className="block text-sm font-bold mb-2">
             Title
