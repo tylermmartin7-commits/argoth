@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { updateReportStatus } from '@/lib/actions/reports'
 // import { hideDebate } from '@/lib/actions/debates'
 import { hideComment } from '@/lib/actions/comments'
+import { hideDebate } from '../../../../argoth/src/lib/actions/debates'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,7 +80,7 @@ export default async function AdminReportsPage() {
     .eq('id', user.id)
     .single() as any
 
-  if (!profile?.is_admin) {
+  if (!profile || !profile.is_admin) {
     redirect('/')
   }
 
