@@ -30,6 +30,7 @@ export default async function HomePage({
       ? 'debates_feed_top_7d'
       : 'debates_feed_trending'
 
+
   const { data: debates, error } = await supabase
     .from(viewName)
     .select('*')
@@ -47,7 +48,7 @@ export default async function HomePage({
   // Get user votes if logged in
   let userVotes: Record<string, number> = {}
   if (user && debates) {
-    const debateIds = debates.map((d) => d.id)
+    const debateIds = (debates as DebateWithDetails[]).map((d) => d.id)
     const { data: votes } = await supabase
       .from('votes')
       .select('target_id, value')
@@ -55,8 +56,9 @@ export default async function HomePage({
       .eq('target_type', 'debate')
       .in('target_id', debateIds)
 
+    type Vote = { target_id: string; value: number }
     if (votes) {
-      userVotes = votes.reduce(
+      userVotes = (votes as Vote[]).reduce(
         (acc, vote) => ({
           ...acc,
           [vote.target_id]: vote.value,
@@ -67,7 +69,7 @@ export default async function HomePage({
   }
 
   const debatesWithVotes: DebateWithDetails[] =
-    debates?.map((debate) => ({
+    (debates as DebateWithDetails[] | undefined)?.map((debate) => ({
       ...debate,
       user_vote: userVotes[debate.id] || null,
     })) || []
