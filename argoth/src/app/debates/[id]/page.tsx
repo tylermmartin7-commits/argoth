@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import React, { useState } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import DebateCard from '@/components/DebateCard'
 import CommentCard from '@/components/CommentCard'
@@ -6,10 +7,6 @@ import { createComment } from '@/lib/actions/comments'
 import type { DebateWithDetails, CommentWithDetails } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
-
-"use client";
-
-import { useState } from 'react'
 
 function CommentForm({
   debateId,
