@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { createClient } from '../supabase/server'
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-export async function createDebate(formData: FormData) {
+export async function createDebate(formData: FormData): Promise<void> {
   const supabase: any = await createClient()
 
   const {
@@ -12,7 +12,7 @@ export async function createDebate(formData: FormData) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be logged in to create a debate' }
+    redirect("/");
   }
 
   const title = formData.get('title') as string
@@ -23,10 +23,10 @@ export async function createDebate(formData: FormData) {
   const sideBLabel = formData.get('side_b_label') as string
 
   if (!title || !claim) {
-    return { error: 'Title and claim are required' }
+    throw new Error("Title and claim are required");
   }
 
-  const { data, error } = await supabase
+  const { data: newDebate, error } = await supabase
     .from('debates')
     .insert({
       author_id: user.id,
@@ -41,11 +41,11 @@ export async function createDebate(formData: FormData) {
     .single()
 
   if (error) {
-    return { error: error.message }
+    throw new Error(error.message)
   }
 
   revalidatePath('/')
-  redirect(`/debates/${data.id}`)
+  redirect(`/debates/${newDebate.id}`);
 }
 
 export async function updateDebate(debateId: string, formData: FormData) {
