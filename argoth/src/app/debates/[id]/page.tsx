@@ -7,7 +7,7 @@ import type { DebateWithDetails, CommentWithDetails } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
-'use client'
+"use client";
 
 import { useState } from 'react'
 
